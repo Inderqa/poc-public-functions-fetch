@@ -57,4 +57,5 @@ jobs:
           path: |
             diff_report.md
             changed_files.csv
+            changed_lines.csv
           retention-days: 30
