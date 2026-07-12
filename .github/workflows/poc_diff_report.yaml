@@ -6,7 +6,6 @@
 name: PoC - Diff Change Report
 
 on:
-  push:                # every commit pushed to any branch
   pull_request:        # and every PR update
   workflow_dispatch:   # manual trigger button, handy for testing
 
@@ -57,4 +56,5 @@ jobs:
           path: |
             diff_report.md
             changed_files.csv
+            changed_lines.csv
           retention-days: 30
