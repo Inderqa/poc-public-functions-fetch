@@ -6,6 +6,7 @@
 name: PoC - Diff Change Report
 
 on:
+  push:                # every commit pushed to any branch
   pull_request:        # and every PR update
   workflow_dispatch:   # manual trigger button, handy for testing
 
@@ -21,6 +22,10 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          # For PRs, check out the real branch commit instead of GitHub's
+          # synthetic test-merge commit, so recorded SHAs are traceable.
+          # (Empty for push events -> falls back to the default ref.)
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Determine diff range
         id: range
