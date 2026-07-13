@@ -6,7 +6,6 @@
 name: PoC - Diff Change Report
 
 on:
-  push:                # every commit pushed to any branch
   pull_request:        # and every PR update
   workflow_dispatch:   # manual trigger button, handy for testing
 
@@ -27,8 +26,12 @@ jobs:
         id: range
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            git fetch origin ${{ github.base_ref }} --depth=1 || true
-            echo "base=origin/${{ github.base_ref }}" >> "$GITHUB_OUTPUT"
+            git fetch origin ${{ github.base_ref }} || true
+            # merge-base = the commit where this branch diverged from base.
+            # Diffing from there matches GitHub's PR "Files changed" tab exactly
+            # and ignores commits that landed on base after the branch was cut.
+            MB=$(git merge-base "origin/${{ github.base_ref }}" HEAD)
+            echo "base=$MB" >> "$GITHUB_OUTPUT"
             echo "head=HEAD" >> "$GITHUB_OUTPUT"
           elif [ -n "${{ github.event.before }}" ] && \
                [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ] && \
@@ -57,4 +60,5 @@ jobs:
           path: |
             diff_report.md
             changed_files.csv
+            changed_lines.csv
           retention-days: 30
